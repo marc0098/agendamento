@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento Online - Clínica</title>
+    <meta name="description" content="Agende seu horário online de forma rápida e prática. Escolha o serviço, a data e o horário de sua preferência.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fa-solid fa-calendar-check logo-icon"></i>
+                <span class="logo-text">Clínica<span>Agendamentos</span></span>
+            </div>
+            <nav class="header-nav">
+                <button id="btn-admin-toggle" class="btn-text" aria-label="Acessar Área Administrativa">
+                    <i class="fa-solid fa-lock"></i> Área Restrita
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="app-main container">
+        <!-- APP AGENDAMENTO -->
+        <section id="scheduling-app" class="card main-card">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-num">1</div>
+                        <span class="step-title">Serviço</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-num">2</div>
+                        <span class="step-title">Data e Hora</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-num">3</div>
+                        <span class="step-title">Identificação</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 1: SERVIÇOS -->
+            <div class="step-content active" id="step-1">
+                <h1 class="section-title">Selecione o Serviço</h1>
+                <p class="section-subtitle">Escolha o procedimento que deseja realizar conosco hoje.</p>
+                
+                <div class="loading-state" id="services-loading">
+                    <div class="spinner"></div>
+                    <p>Buscando serviços disponíveis...</p>
+                </div>
+
+                <div class="error-state hidden" id="services-error">
+                    <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+                    <p>Não foi possível carregar os serviços. Tentando conexão local...</p>
+                    <button class="btn btn-secondary btn-retry" id="btn-retry-services">Tentar Novamente</button>
+                </div>
+
+                <div class="services-grid" id="services-grid">
+                    <!-- Dinamicamente preenchido pelo JS -->
+                </div>
+            </div>
+
+            <!-- STEP 2: DATA E HORA -->
+            <div class="step-content" id="step-2">
+                <h1 class="section-title">Escolha a Data e o Horário</h1>
+                <p class="section-subtitle">Selecione um dia disponível e depois um horário de sua preferência.</p>
+
+                <div class="selected-service-banner" id="selected-service-banner">
+                    <!-- Exibe informações do serviço selecionado -->
+                </div>
+
+                <div class="date-time-flex">
+                    <!-- Calendar Picker -->
+                    <div class="calendar-wrapper">
+                        <h3 class="picker-title"><i class="fa-regular fa-calendar-days"></i> Escolha a Data</h3>
+                        <div class="date-input-container">
+                            <input type="date" id="input-date" class="form-control" min="">
+                        </div>
+                        <div class="calendar-helper">
+                            * Agendamentos permitidos com até 60 dias de antecedência.
+                        </div>
+                    </div>
+
+                    <!-- Time Picker -->
+                    <div class="time-wrapper">
+                        <h3 class="picker-title"><i class="fa-regular fa-clock"></i> Horários Disponíveis</h3>
+                        
+                        <div class="time-states">
+                            <div class="loading-state hidden" id="times-loading">
+                                <div class="spinner"></div>
+                                <p>Buscando horários disponíveis...</p>
+                            </div>
+                            
+                            <div class="info-state" id="times-placeholder">
+                                <i class="fa-regular fa-calendar-check placeholder-icon"></i>
+                                <p>Selecione uma data para ver os horários disponíveis.</p>
+                            </div>
+
+                            <div class="error-state hidden" id="times-error">
+                                <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+                                <p>Erro ao buscar horários.</p>
+                            </div>
+
+                            <div class="empty-state hidden" id="times-empty">
+                                <i class="fa-regular fa-face-frown empty-icon"></i>
+                                <p>Não há horários disponíveis para a data selecionada. Por favor, escolha outro dia.</p>
+                            </div>
+                        </div>
+
+                        <div class="times-grid hidden" id="times-grid">
+                            <!-- Dinamicamente preenchido pelo JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-secondary" id="btn-back-to-1">Voltar</button>
+                    <button class="btn btn-primary" id="btn-next-to-3" disabled>Avançar</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: DADOS DO CLIENTE -->
+            <div class="step-content" id="step-3">
+                <h1 class="section-title">Confirme seus Dados</h1>
+                <p class="section-subtitle">Por favor, informe seu nome e contato para concluir o agendamento.</p>
+
+                <div class="summary-box" id="appointment-summary">
+                    <!-- Resumo das etapas anteriores -->
+                </div>
+
+                <form id="form-client" class="form-client">
+                    <div class="form-group">
+                        <label for="client-name" class="form-label">Nome Completo</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input type="text" id="client-name" class="form-control" placeholder="Seu nome completo" required minlength="2">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="client-whatsapp" class="form-label">WhatsApp (com DDD)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-brands fa-whatsapp input-icon"></i>
+                            <input type="tel" id="client-whatsapp" class="form-control" placeholder="Ex: 11999999999" required pattern="\d{10,13}">
+                        </div>
+                        <small class="form-helper">Apenas números, incluindo DDD (ex. 11999998888)</small>
+                    </div>
+
+                    <div class="booking-loading booking-loading-wrapper hidden" id="booking-loading">
+                        <div class="spinner"></div>
+                        <p>Salvando seu agendamento, aguarde...</p>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-back-to-2">Voltar</button>
+                        <button type="submit" class="btn btn-primary btn-success-action" id="btn-submit-booking">Confirmar Agendamento</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- STEP 4: SUCESSO -->
+            <div class="step-content" id="step-success">
+                <div class="success-icon-wrapper">
+                    <div class="success-ring"></div>
+                    <i class="fa-solid fa-check success-check-icon"></i>
+                </div>
+                
+                <h1 class="section-title text-center">Agendamento Realizado!</h1>
+                <p class="section-subtitle text-center">Seu horário foi reservado e registrado com sucesso.</p>
+
+                <div class="success-details-card" id="success-details">
+                    <!-- Preenchido pelo JS -->
+                </div>
+
+                <div class="success-actions">
+                    <button class="btn btn-primary btn-full" id="btn-reset-booking">Fazer Novo Agendamento</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN PANEL (Escondido por padrão) -->
+        <section id="admin-panel" class="card main-card hidden">
+            <div class="admin-header">
+                <h2><i class="fa-solid fa-lock-open admin-icon"></i> Painel Administrativo</h2>
+                <button id="btn-admin-close" class="btn-close" aria-label="Fechar painel admin">&times;</button>
+            </div>
+
+            <div class="admin-auth" id="admin-auth-section">
+                <p class="admin-desc">Insira o token de administrador configurado no Google Sheets para acessar os agendamentos.</p>
+                <div class="form-group">
+                    <label for="admin-token" class="form-label">Token de Administrador</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key input-icon"></i>
+                        <input type="password" id="admin-token" class="form-control" placeholder="Cole o token UUID aqui">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-full" id="btn-admin-login">Entrar</button>
+            </div>
+
+            <div class="admin-content hidden" id="admin-content-section">
+                <div class="admin-filters">
+                    <div class="form-group">
+                        <label for="admin-date" class="form-label">Filtrar por Data</label>
+                        <input type="date" id="admin-date" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" id="btn-admin-refresh">
+                        <i class="fa-solid fa-rotate-right"></i> Atualizar
+                    </button>
+                </div>
+
+                <div class="loading-state hidden" id="admin-loading">
+                    <div class="spinner"></div>
+                    <p>Carregando agendamentos...</p>
+                </div>
+
+                <div class="admin-list-wrapper">
+                    <table class="admin-table" id="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>WhatsApp</th>
+                                <th>Serviço</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tbody">
+                            <!-- Preenchido pelo JS -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="empty-state hidden" id="admin-empty">
+                        <i class="fa-regular fa-calendar-minus empty-icon"></i>
+                        <p>Nenhum agendamento encontrado para esta data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Clínica Agendamentos. Integrado de forma segura com Google Sheets.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
