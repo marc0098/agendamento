@@ -6,7 +6,7 @@
  */
 
 // INSIRA AQUI A URL DE IMPLANTAÇÃO GERADA NO GOOGLE APPS SCRIPT
-const API_URL = 'https://script.google.com/macros/s/AKfycbw_KvJ8bzahGHjeJr0wsM5160bp4pXyUuQBryu9MhY2EC-p9Pg1n10ntSN8FlYC5z3b3A/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbx-DANu63ie1JlUmH-Kd9fkubyOF1VNDLml79vrFWeiDMJcbW40dOW0ZPmsuwbJwJTpaQ/exechttps://script.google.com/macros/s/AKfycbx-DANu63ie1JlUmH-Kd9fkubyOF1VNDLml79vrFWeiDMJcbW40dOW0ZPmsuwbJwJTpaQ/exec';
 
 // MOCK DATA (Utilizado se a API_URL não estiver configurada ou falhar)
 const MOCK_SERVICES = [
